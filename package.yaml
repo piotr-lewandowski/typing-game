@@ -21,6 +21,17 @@ description:         Please see the README on GitHub at <https://github.com/gith
 
 dependencies:
 - base >= 4.7 && < 5
+- mtl
+- microlens
+- microlens-th
+- random
+- gloss
+- Yampa
+- microlens
+- microlens-th
+- random
+- JuicyPixels
+- gloss-juicy
 
 ghc-options:
 - -Wall

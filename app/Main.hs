@@ -1,6 +1,7 @@
 module Main (main) where
 
-import Lib
+import Graphics.Gloss
 
 main :: IO ()
-main = someFunc
+main = display (InWindow "Hello, World!" (400, 400) (10, 10)) white (Circle 80)
+
