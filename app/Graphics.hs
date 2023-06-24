@@ -11,7 +11,7 @@ import Images
 renderApp :: App -> Picture
 renderApp app = case app^.currentStage of
     Playing game -> renderGame (app^.activeConfig) (app^.images) game
-    Menu menu -> renderMenu menu
+    Menu menu -> renderMenu (app^.activeConfig) menu (app^.images.titleImg)
     Lost s -> renderLost s
     Won s -> renderWon s
 
@@ -19,22 +19,24 @@ deskColor :: Color
 deskColor = makeColorI 222 184 135 255
 
 renderDesk :: Config -> Picture -> Picture
-renderDesk config keyb = translate 0 movY $ color deskColor $ rectangleSolid w h
+renderDesk config keyb = pictures 
+    [ translate 0 movY $ color deskColor $ rectangleSolid w h
+    , translate 0 movY $ scale 0.5 0.5 $ keyb
+    ]
     where
         w = fromIntegral (config^.width)
         h = 0.2 * fromIntegral (config^.height)
         movY = -fromIntegral (config^.height) / 2
 
 renderMonitor :: Config -> Picture -> Picture
-renderMonitor config monit = color black $ rectangleSolid w h
+renderMonitor config monit = translate 0 (-10) $ scale 0.8 0.8 $ monit
     where
         w = 0.8 * fromIntegral (config^.width)
         h = 0.8 * fromIntegral (config^.height)
 
 renderSnippet :: Config -> SnippetInProgress -> Picture
 renderSnippet config (SnippetInProgress typ left progress) = pictures
-    [ renderSnippetBackground config
-    , color c (scale 0.2 0.2 $ text progress)
+    [ color c (scale 0.2 0.2 $ text progress)
     , translate (fromIntegral (length progress) * 12.0) 0 $ scale 0.2 0.2 (text left)
     ]
     where
@@ -66,11 +68,12 @@ renderScore config game = translate (- fromIntegral (config^.width) / 2) (fromIn
     $ text
     $ "$" ++ show (game^.score)
 
-renderMenu :: MenuState -> Picture
-renderMenu menu = pictures $ zipWith renderMenuItem [0..] (menu^.actions)
+renderMenu :: Config -> MenuState -> Picture -> Picture
+renderMenu config menu title = pictures $ placedTitle : zipWith renderMenuItem [0..] (menu^.actions)
     where
+        placedTitle = translate 0 (fromIntegral (config^.height)/2 - 200) title
         renderMenuItem :: Int -> MenuAction -> Picture
-        renderMenuItem i action = translate 0 (fromIntegral i * 100) $ color (chooseColor i) $ scale 0.2 0.2 $ text $ show action
+        renderMenuItem i action = translate 0 (fromIntegral (-i) * 100) $ color (chooseColor i) $ scale 0.2 0.2 $ text $ show action
         chooseColor :: Int -> Color
         chooseColor i = if i == menu^.selectedAction then red else black
 

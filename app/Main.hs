@@ -17,7 +17,7 @@ main = do
     let w = config^.width
         h = config^.height
     play
-        (InWindow "Developer Simulator" (w, h) (0, 0))
+        (InWindow "Dev Sim" (w, h) (0, 0))
         white
         120
         (initialState config imgs)

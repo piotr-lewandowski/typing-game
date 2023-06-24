@@ -67,7 +67,7 @@ checkGameLost game = if game^.lifesLeft <= 0
 setNextSnippet :: Game -> Either GameResult Game
 setNextSnippet game = case game^.remainingSnippets of
     [] -> Left $ GameWon (game^.score)
-    (x:xs) -> Right $ game & remainingSnippets .~ xs & selectedSnippet .~ freshSnippet x & timeLeft .~ 10
+    (x:xs) -> Right $ game & remainingSnippets .~ xs & selectedSnippet .~ freshSnippet x & timeLeft .~ 1
 
 freshSnippet :: Snippet -> SnippetInProgress
 freshSnippet (Snippet t c) = SnippetInProgress t c ""
@@ -78,7 +78,7 @@ newGame :: Level -> Game
 newGame l = Game
     { _remainingSnippets = tail $ l^.levelSnippets
     , _selectedSnippet = freshSnippet $ head $ l^.levelSnippets
-    , _timeLeft = 10
+    , _timeLeft = 1
     , _timeInitial = 10
     , _score = 0
     , _lifesLeft = l^.levelLifes
