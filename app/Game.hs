@@ -56,7 +56,7 @@ calculateScore game = length (game^.selectedSnippet.snippetProgress) * ceiling (
 
 updateGame :: Float -> Game -> Either GameResult Game
 updateGame dt game = if game^.timeLeft <= 0
-    then game & lifesLeft -~ 1 & checkGameLost
+    then game & lifesLeft -~ 1 & checkGameLost >>= setNextSnippet
     else Right $ game & timeLeft -~ dt
 
 checkGameLost :: Game -> Either GameResult Game
@@ -67,19 +67,32 @@ checkGameLost game = if game^.lifesLeft <= 0
 setNextSnippet :: Game -> Either GameResult Game
 setNextSnippet game = case game^.remainingSnippets of
     [] -> Left $ GameWon (game^.score)
-    (x:xs) -> Right $ game & remainingSnippets .~ xs & selectedSnippet .~ freshSnippet x & timeLeft .~ 1
+    (x:xs) -> Right $ game 
+        & remainingSnippets .~ xs 
+        & selectedSnippet .~ freshSnippet x 
+        & timeLeft .~ calculateSnippetTime x
+        & timeInitial .~ calculateSnippetTime x
 
 freshSnippet :: Snippet -> SnippetInProgress
 freshSnippet (Snippet t c) = SnippetInProgress t c ""
 
 data GameResult = GameWon Score | GameLost Score
 
+calculateSnippetTime :: Snippet -> Float
+calculateSnippetTime (Snippet t c) = fromIntegral (length c) / 10 + case t of
+    Bug -> 3
+    Task -> 6
+    Story -> 9
+
 newGame :: Level -> Game
 newGame l = Game
     { _remainingSnippets = tail $ l^.levelSnippets
-    , _selectedSnippet = freshSnippet $ head $ l^.levelSnippets
-    , _timeLeft = 1
-    , _timeInitial = 10
+    , _selectedSnippet = freshSnippet firstSnippet
+    , _timeLeft = time
+    , _timeInitial = time
     , _score = 0
     , _lifesLeft = l^.levelLifes
     , _level = l }
+    where
+        firstSnippet = head $ l^.levelSnippets
+        time = calculateSnippetTime firstSnippet

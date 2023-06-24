@@ -19,20 +19,17 @@ deskColor :: Color
 deskColor = makeColorI 222 184 135 255
 
 renderDesk :: Config -> Picture -> Picture
-renderDesk config keyb = pictures 
-    [ translate 0 movY $ color deskColor $ rectangleSolid w h
-    , translate 0 movY $ scale 0.5 0.5 $ keyb
+renderDesk config keyb = pictures
+    [ translate 0 (-movY) $ color deskColor $ rectangleSolid w h
+    , translate 0 (-movY) $ scale 0.5 0.5 keyb
     ]
     where
         w = fromIntegral (config^.width)
         h = 0.2 * fromIntegral (config^.height)
-        movY = -fromIntegral (config^.height) / 2
+        movY = fromIntegral (config^.height) / 2
 
 renderMonitor :: Config -> Picture -> Picture
-renderMonitor config monit = translate 0 (-10) $ scale 0.8 0.8 $ monit
-    where
-        w = 0.8 * fromIntegral (config^.width)
-        h = 0.8 * fromIntegral (config^.height)
+renderMonitor config monit = translate 0 (-10) $ scale 0.8 0.8 monit
 
 renderSnippet :: Config -> SnippetInProgress -> Picture
 renderSnippet config (SnippetInProgress typ left progress) = pictures
@@ -57,7 +54,7 @@ renderGame config imgs game = pictures
     , renderMonitor config (imgs^.monitorImg)
     , renderSnippet config (game^.selectedSnippet)
     , renderScore config game
-    , renderLifes config game (imgs^.heartImg)
+    , renderLifes config game imgs
     , renderTimeLeft config game
     ]
 
@@ -83,10 +80,10 @@ renderLost s = color red $ scale 0.2 0.2 $ text $ "You lost with score " ++ show
 renderWon :: Score -> Picture
 renderWon s = color green $ scale 0.2 0.2 $ text $ "You won with score " ++ show s
 
-renderLifes :: Config -> Game -> Picture -> Picture
-renderLifes config game lifePicture = translate (fromIntegral (config^.width) / 2 - 2 * totalW) (fromIntegral (config^.height) / 2 - w / 2 - 5) $ pictures
-    [ color (greyN 0.3) $ pictures $ moveList $ replicate initial lifePicture
-    , color red $ pictures $ moveList $ replicate left lifePicture
+renderLifes :: Config -> Game -> Images -> Picture
+renderLifes config game imgs = translate (fromIntegral (config^.width) / 2 - 2 * totalW) (fromIntegral (config^.height) / 2 - w / 2 - 5) $ pictures
+    [ pictures $ moveList $ replicate initial (imgs^.brokenHeartImg)
+    , pictures $ moveList $ replicate left (imgs^.heartImg)
     ]
     where
         moveList :: [Picture] -> [Picture]
@@ -94,7 +91,6 @@ renderLifes config game lifePicture = translate (fromIntegral (config^.width) / 
         w :: Float
         w = 40.0
         totalW = w * fromIntegral initial
-        h = fromIntegral (config^.height)
         left = game^.lifesLeft
         initial = game^.level^.levelLifes
 

@@ -7,7 +7,7 @@
       "_levelLifes": 3,
       "_levelSnippets": [
         {"_snippetType": "Bug", "_snippetContent": "Hello World!"},
-        {"_snippetType": "Bug", "_snippetContent": "Hello World!"}
+        {"_snippetType": "Bug", "_snippetContent": "Hello!"}
       ]
     },
     {

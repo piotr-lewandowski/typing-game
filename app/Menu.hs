@@ -7,7 +7,7 @@ import Input
 import Lens.Micro.TH
 import Lens.Micro
 
-data MenuAction = StartGame | HighScores deriving (Show)
+data MenuAction = StartGame | HighScores | LevelSelect deriving (Show)
 
 data MenuState = MenuState { _actions :: [MenuAction], _selectedAction :: Int } deriving (Show)
 
