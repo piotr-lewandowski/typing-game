@@ -1,0 +1,58 @@
+{
+  "_width": 800,
+  "_height": 600,
+  "_levels": [
+    {
+      "_levelNum": 1,
+      "_levellifes": 3,
+      "_levelSnippets": [
+        {"_snippetType": "Bug", "_snippetContent": "Hello World!"},
+        {"_snippetType": "Bug", "_snippetContent": "Hello World!"}
+      ]
+    },
+    {
+      "_levelNum": 2,
+      "_levellifes": 3,
+      "_levelSnippets": [
+        {"_snippetType": "Bug", "_snippetContent": "Hello World!"}
+      ]
+    }
+  ],
+  "small": [
+    "print('Hello, world!')", 
+    "System.out.println('Hello, world!')",
+    "console.log('Hello, world!')",
+    "echo 'Hello, world!'",
+    "printf('Hello, world!')",
+    "puts 'Hello, world!'",
+    "alert('Hello, world!')",
+    "document.write('Hello, world!')",
+    "cout << 'Hello, world!'",
+    "NSLog(@'Hello, world!')"
+  ],
+  "medium": [
+    "for i in range(10):\n    print(i)",
+    "int sum = 0;\nfor (int i = 1; i <= 10; i++)\n    sum += i;\nSystem.out.println(sum);",
+    "const numbers = [1, 2, 3, 4, 5];\nconst doubled = numbers.map(num => num * 2);\nconsole.log(doubled);",
+    "function factorial(n) {\n    if (n === 0 || n === 1)\n        return 1;\n    else\n        return n * factorial(n - 1);\n}",
+    "int fib(int n) {\n    if (n <= 1)\n        return n;\n    return fib(n - 1) + fib(n - 2);\n}\n\nfor (int i = 0; i < 10; i++)\n    System.out.println(fib(i));",
+    "import math\n\nradius = 5\narea = math.pi * radius**2\nprint(area)",
+    "const numbers = [1, 2, 3, 4, 5];\nconst evenNumbers = numbers.filter(num => num % 2 === 0);\nconsole.log(evenNumbers);",
+    "def greet(name):\n    print(f'Hello, {name}!')\n\ngreet('Alice')",
+    "int[] numbers = {1, 2, 3, 4, 5};\nint sum = 0;\nfor (int number : numbers)\n    sum += number;\nSystem.out.println(sum);",
+    "const squared = numbers.map(num => num**2);\nconsole.log(squared);"
+  ],
+  "big": [
+    "def bubble_sort(arr):\n    n = len(arr)\n    for i in range(n):\n        for j in range(0, n - i - 1):\n            if arr[j] > arr[j + 1]:\n                arr[j], arr[j + 1] = arr[j + 1], arr[j]\n\narr = [64, 34, 25, 12, 22, 11, 90]\nbubble_sort(arr)\nprint(arr)",
+    "function mergeSort(arr) {\n    if (arr.length <= 1) {\n        return arr;\n    }\n\n    const mid = Math.floor(arr.length / 2);\n    const left = arr.slice(0, mid);\n    const right = arr.slice(mid);\n\n    return merge(mergeSort(left), mergeSort(right));\n}\n\nfunction merge(left, right) {\n    let result = [];\n    let i = 0;\n    let j = 0;\n\n    while (i < left.length && j < right.length) {\n        if (left[i] <= right[j]) {\n            result.push(left[i]);\n            i++;\n        } else {\n            result.push(right[j]);\n            j++;\n        }\n    }\n\n    return result.concat(left.slice(i)).concat(right.slice(j));\n}\n\nconst arr = [64, 34, 25, 12, 22, 11, 90];\nconst sortedArr = mergeSort(arr);\nconsole.log(sortedArr);",
+    "def binary_search(arr, target):\n    low = 0\n    high = len(arr) - 1\n\n    while low <= high:\n        mid = (low + high) // 2\n        if arr[mid] == target:\n            return mid\n        elif arr[mid] < target:\n            low = mid + 1\n        else:\n            high = mid - 1\n\n    return -1\n\narr = [11, 12, 22, 25, 34, 64, 90]\ntarget = 25\nindex = binary_search(arr, target)\nprint(index)",
+    "public class Fibonacci {\n    public static int fib(int n) {\n        if (n <= 1)\n            return n;\n        return fib(n - 1) + fib(n - 2);\n    }\n\n    public static void main(String[] args) {\n        for (int i = 0; i < 10; i++)\n            System.out.println(fib(i));\n    }\n}",
+    "def factorial(n):\n    if n == 0 or n == 1:\n        return 1\n    else:\n        return n * factorial(n - 1)\n\nprint(factorial(5))",
+    "public class Rectangle {\n    private int length;\n    private int width;\n\n    public Rectangle(int length, int width) {\n        this.length = length;\n        this.width = width;\n    }\n\n    public int getArea() {\n        return length * width;\n    }\n}\n\nRectangle rectangle = new Rectangle(5, 3);\nint area = rectangle.getArea();\nSystem.out.println(area);",
+    "def linear_search(arr, target):\n    for i in range(len(arr)):\n        if arr[i] == target:\n            return i\n    return -1\n\narr = [64, 34, 25, 12, 22, 11, 90]\ntarget = 25\nindex = linear_search(arr, target)\nprint(index)",
+    "def gcd(a, b):\n    while b:\n        a, b = b, a % b\n    return a\n\nresult = gcd(48, 18)\nprint(result)",
+    "function factorial(n) {\n    if (n === 0 || n === 1) {\n        return 1;\n    } else {\n        return n * factorial(n - 1);\n    }\n}\n\nconsole.log(factorial(5));",
+    "public class BubbleSort {\n    public static void bubbleSort(int[] arr) {\n        int n = arr.length;\n        for (int i = 0; i < n - 1; i++) {\n            for (int j = 0; j < n - i - 1; j++) {\n                if (arr[j] > arr[j + 1]) {\n                    int temp = arr[j];\n                    arr[j] = arr[j + 1];\n                    arr[j + 1] = temp;\n                }\n            }\n        }\n    }\n\n    public static void main(String[] args) {\n        int[] arr = {64, 34, 25, 12, 22, 11, 90};\n        bubbleSort(arr);\n        for (int i = 0; i < arr.length; i++) {\n            System.out.print(arr[i] + \" \");\n        }\n    }\n}"
+  ]
+}
+

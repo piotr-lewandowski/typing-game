@@ -6,22 +6,21 @@ cabal-version: 1.12
 
 name:           typing-game
 version:        0.1.0.0
-description:    Please see the README on GitHub at <https://github.com/githubuser/typing-game#readme>
-homepage:       https://github.com/githubuser/typing-game#readme
-bug-reports:    https://github.com/githubuser/typing-game/issues
-author:         Author name here
-maintainer:     example@example.com
-copyright:      2023 Author name here
+description:    Simple typing game written in Haskell
+homepage:       https://github.com/piotr-lewandowski/typing-game#readme
+bug-reports:    https://github.com/piotr-lewandowski/typing-game/issues
+author:         Piotr Lewandowski
+maintainer:     Piotr Lewandowski
+copyright:      2023 Piotr Lewandowski
 license:        BSD3
 license-file:   LICENSE
 build-type:     Simple
 extra-source-files:
     README.md
-    CHANGELOG.md
 
 source-repository head
   type: git
-  location: https://github.com/githubuser/typing-game
+  location: https://github.com/piotr-lewandowski/typing-game
 
 library
   exposed-modules:
@@ -34,18 +33,27 @@ library
   build-depends:
       JuicyPixels
     , Yampa
+    , aeson
     , base >=4.7 && <5
+    , bytestring
     , gloss
     , gloss-juicy
     , microlens
     , microlens-th
     , mtl
     , random
+    , vector
   default-language: Haskell2010
 
 executable typing-game-exe
   main-is: Main.hs
   other-modules:
+      App
+      Config
+      Game
+      Graphics
+      Input
+      Menu
       Paths_typing_game
   hs-source-dirs:
       app
@@ -53,7 +61,9 @@ executable typing-game-exe
   build-depends:
       JuicyPixels
     , Yampa
+    , aeson
     , base >=4.7 && <5
+    , bytestring
     , gloss
     , gloss-juicy
     , microlens
@@ -61,6 +71,7 @@ executable typing-game-exe
     , mtl
     , random
     , typing-game
+    , vector
   default-language: Haskell2010
 
 test-suite typing-game-test
@@ -73,13 +84,18 @@ test-suite typing-game-test
   ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N
   build-depends:
       JuicyPixels
+    , QuickCheck
     , Yampa
+    , aeson
     , base >=4.7 && <5
+    , bytestring
     , gloss
     , gloss-juicy
+    , hspec
     , microlens
     , microlens-th
     , mtl
     , random
     , typing-game
+    , vector
   default-language: Haskell2010
