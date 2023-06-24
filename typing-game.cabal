@@ -52,6 +52,7 @@ executable typing-game-exe
       Config
       Game
       Graphics
+      Images
       Input
       Menu
       Paths_typing_game

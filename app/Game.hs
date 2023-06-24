@@ -3,7 +3,6 @@
 module Game where
 
 import Input
-import Control.Monad.State.Strict
 import Lens.Micro.TH
 import Lens.Micro
 import GHC.Generics (Generic)
@@ -17,17 +16,18 @@ data Snippet = Snippet { _snippetType :: SnippetType, _snippetContent :: String 
 
 data SnippetInProgress = SnippetInProgress { _snippetInProgressType :: SnippetType, _snippetLeft :: String, _snippetProgress :: String }
 
-data Game = Game 
+data Game = Game
     { _remainingSnippets :: [Snippet]
     , _selectedSnippet :: SnippetInProgress
     , _timeLeft :: Float
+    , _timeInitial :: Float
     , _score :: Score
     , _lifesLeft :: Int
     , _level :: Level }
 
 data Level = Level
     { _levelNum :: Int
-    , _levellifes :: Int
+    , _levelLifes :: Int
     , _levelSnippets :: [Snippet] } deriving (Generic, Show)
 
 makeLenses ''Game
@@ -46,21 +46,21 @@ handleGameInput :: InputEvents -> Game -> Either GameResult Game
 handleGameInput (Typed c) game = if c == head (game^.selectedSnippet.snippetLeft)
     then Right $ game & selectedSnippet.snippetLeft %~ tail & selectedSnippet.snippetProgress %~ (++ [c])
     else Right game
-handleGameInput Confirm game = if game^.selectedSnippet.snippetLeft == []
-    then game & score +~ (calculateScore game) & setNextSnippet
+handleGameInput Confirm game = if null (game^.selectedSnippet.snippetLeft)
+    then game & score +~ calculateScore game & setNextSnippet
     else Right game
 handleGameInput _ game = Right game
 
 calculateScore :: Game -> Score
-calculateScore game = length (game^.selectedSnippet.snippetProgress) * (ceiling (game^.timeLeft))
+calculateScore game = length (game^.selectedSnippet.snippetProgress) * ceiling (game^.timeLeft)
 
 updateGame :: Float -> Game -> Either GameResult Game
-updateGame dt game = if game^.timeLeft <= 0 
+updateGame dt game = if game^.timeLeft <= 0
     then game & lifesLeft -~ 1 & checkGameLost
     else Right $ game & timeLeft -~ dt
 
 checkGameLost :: Game -> Either GameResult Game
-checkGameLost game = if game^.lifesLeft <= 0 
+checkGameLost game = if game^.lifesLeft <= 0
     then Left $ GameLost (game^.score)
     else Right game
 
@@ -75,10 +75,11 @@ freshSnippet (Snippet t c) = SnippetInProgress t c ""
 data GameResult = GameWon Score | GameLost Score
 
 newGame :: Level -> Game
-newGame level = Game 
-    { _remainingSnippets = tail $ level^.levelSnippets
-    , _selectedSnippet = freshSnippet $ head $ level^.levelSnippets
+newGame l = Game
+    { _remainingSnippets = tail $ l^.levelSnippets
+    , _selectedSnippet = freshSnippet $ head $ l^.levelSnippets
     , _timeLeft = 10
+    , _timeInitial = 10
     , _score = 0
-    , _lifesLeft = level^.levellifes
-    , _level = level }
+    , _lifesLeft = l^.levelLifes
+    , _level = l }

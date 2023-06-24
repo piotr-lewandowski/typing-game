@@ -8,12 +8,14 @@ import Input
 import Control.Monad.State.Strict
 import Lens.Micro.TH
 import Lens.Micro
+import Images
 
 data Stage = Playing Game | Menu MenuState | Lost Score | Won Score
 
 data App = App
     { _currentStage :: Stage
     , _activeConfig :: Config
+    , _images :: Images
     , _activeLevel :: Level }
 
 makeLenses ''App
