@@ -2,7 +2,6 @@ module Main (main) where
 
 import Graphics.Gloss
 import Graphics
-import Game
 import Config
 import Input
 import Images

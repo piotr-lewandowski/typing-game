@@ -34,32 +34,32 @@ data App = App
 makeLenses ''App
 
 updateApp :: Float -> App -> App
-updateApp dt app =
-    case app^.currentStage of
+updateApp dt ap =
+    case ap^.currentStage of
         Playing game -> case updateGame dt game of
-            Left (GameLost s) -> app & currentStage .~ Lost s
-            Left (GameWon s) -> app & currentStage .~ Won s
-            Right game' -> app & currentStage .~ Playing game'
-        _ -> app
+            Left (GameLost s) -> ap & currentStage .~ Lost s
+            Left (GameWon s) -> ap & currentStage .~ Won s
+            Right game' -> ap & currentStage .~ Playing game'
+        _ -> ap
     
 handleAppInput :: InputEvents -> App -> App
-handleAppInput (Resize (w, h)) app = app & activeConfig.width .~ w & activeConfig.height .~ h
-handleAppInput event app =
-    case app^.currentStage of
-        Playing game -> case handleGameInput event game of
-            Left (GameLost s) -> app & currentStage .~ Lost s
-            Left (GameWon s) -> app & currentStage .~ Won s & updateScores s
-            Right game' -> app & currentStage .~ Playing game'
-        Menu menu -> case handleMenuInput event menu of
-            Left StartGame -> app & currentStage .~ Playing (newGame $ app^.activeLevel)
-            Left HighScores -> app & currentStage .~ ViewingScores (app^.highScores)
-            Left LevelSelect -> app & currentStage .~ ChoosingLevel (app^.activeConfig.levels)
-            Left NameChange -> app & currentStage .~ ChangingName (NameChangeState (app^.activeConfig.name) "")
-            Right menu' -> app & currentStage .~ Menu menu'
-        ChangingName nameChange -> case handleNameChangeInput event nameChange of
-            Left newName -> app & currentStage .~ (Menu mainMenu) & updateName newName
-            Right nameChange' -> app & currentStage .~ ChangingName nameChange'
-        _ -> app & currentStage .~ Menu mainMenu
+handleAppInput (Resize (w, h)) ap = ap & activeConfig.width .~ w & activeConfig.height .~ h
+handleAppInput ev ap =
+    case ap^.currentStage of
+        Playing game -> case handleGameInput ev game of
+            Left (GameLost s) -> ap & currentStage .~ Lost s
+            Left (GameWon s) -> ap & currentStage .~ Won s & updateScores s
+            Right game' -> ap & currentStage .~ Playing game'
+        Menu menu -> case handleMenuInput ev menu of
+            Left StartGame -> ap & currentStage .~ Playing (newGame $ ap^.activeLevel)
+            Left HighScores -> ap & currentStage .~ ViewingScores (ap^.highScores)
+            Left LevelSelect -> ap & currentStage .~ ChoosingLevel (ap^.activeConfig.levels)
+            Left NameChange -> ap & currentStage .~ ChangingName (NameChangeState (ap^.activeConfig.name) "")
+            Right menu' -> ap & currentStage .~ Menu menu'
+        ChangingName nameChange -> case handleNameChangeInput ev nameChange of
+            Left new -> ap & currentStage .~ (Menu mainMenu) & updateName new
+            Right newState -> ap & currentStage .~ ChangingName newState
+        _ -> ap & currentStage .~ Menu mainMenu
 
 handleMaybeAppInput :: Event InputEvents -> App -> App
 handleMaybeAppInput NoEvent = id
@@ -69,18 +69,18 @@ timeDifference :: SF () Float
 timeDifference = iterFrom (\_ _ dt _ -> dt) 0 >>> arr realToFrac
 
 inputSF :: App -> SF (Event InputEvents) App
-inputSF app = loopPre app $ proc (e, app') -> do
+inputSF initialApp = loopPre initialApp $ proc (e, app') -> do
     app'' <- arr (uncurry handleMaybeAppInput) -< (e, app')
     dt <- timeDifference -< ()
-    app''' <- arr (uncurry updateApp) -< (realToFrac dt, app'')
+    app''' <- arr (uncurry updateApp) -< (dt, app'')
     returnA -< (app''', app''')
 
 updateScores :: Score -> App -> App
-updateScores s app = seq (unsafePerformIO $ writeHighScores newScores) (app & highScores .~ newScores)
+updateScores s a = seq (unsafePerformIO $ writeHighScores newScores) (a & highScores .~ newScores)
     where
-        newScores = insertScore (HighScore (app^.(activeConfig.name)) s) (app^.highScores)
+        newScores = insertScore (HighScore (a^.(activeConfig.name)) s) (a^.highScores)
 
 updateName :: Name -> App -> App
-updateName n app = seq (unsafePerformIO $ writeConfig (newApp^.activeConfig)) newApp
+updateName n a = seq (unsafePerformIO $ writeConfig (newApp^.activeConfig)) newApp
     where 
-        newApp = (app & activeConfig.name .~ n)
+        newApp = (a & activeConfig.name .~ n)
