@@ -78,7 +78,7 @@ inputSF initialApp = loopPre initialApp $ proc (e, app') -> do
 updateScores :: Score -> App -> App
 updateScores s a = seq (unsafePerformIO $ writeHighScores newScores) (a & highScores .~ newScores)
     where
-        newScores = insertScore (HighScore (a^.(activeConfig.name)) s) (a^.highScores)
+        newScores = insertScore (a^.highScores) (HighScore (a^.(activeConfig.name)) s)
 
 updateName :: Name -> App -> App
 updateName n a = seq (unsafePerformIO $ writeConfig (newApp^.activeConfig)) newApp

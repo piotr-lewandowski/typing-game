@@ -17,8 +17,8 @@ instance Ord HighScore where
 instance FromJSON HighScore
 instance ToJSON HighScore
 
-insertScore :: HighScore -> [HighScore] -> [HighScore]
-insertScore sc scs = take 8 $ insertInSortedList sc scs
+insertScore :: [HighScore] -> HighScore -> [HighScore]
+insertScore scs sc = take 8 $ insertInSortedList sc scs
 
 insertInSortedList :: Ord a => a -> [a] -> [a]
 insertInSortedList x [] = [x]

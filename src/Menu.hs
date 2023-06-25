@@ -1,8 +1,6 @@
 {-# LANGUAGE TemplateHaskell #-}
 module Menu where
 
-import Config
-import Game
 import InputEvents
 import Lens.Micro.TH
 import Lens.Micro

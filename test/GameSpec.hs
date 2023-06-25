@@ -9,8 +9,8 @@ import Control.Monad (foldM)
 
 import Game
 
-gameTests :: IO ()
-gameTests = hspec $ do
+gameTests :: Spec
+gameTests = do
     describe "Game" $ do
         it "You should loose after going to 0 lifes" $
             property loosing

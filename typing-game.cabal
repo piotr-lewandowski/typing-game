@@ -71,10 +71,11 @@ executable typing-game-exe
 
 test-suite typing-game-test
   type: exitcode-stdio-1.0
-  main-is: Spec.hs
+  main-is: Main.hs
   other-modules:
       GameSpec
       Gen
+      HighScoreSpec
       Paths_typing_game
   hs-source-dirs:
       test
