@@ -9,10 +9,13 @@ import qualified Data.ByteString.Lazy as BS
 import GHC.Generics
 import Lens.Micro.TH
 
+type Name = String
+
 data Config = Config
     { _levels :: [Level]
     , _width :: Int
     , _height :: Int
+    , _name :: Name
     } deriving (Show, Generic)
 
 makeLenses ''Config

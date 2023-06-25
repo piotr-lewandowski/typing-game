@@ -21,7 +21,7 @@ data Game = Game
     , _selectedSnippet :: SnippetInProgress
     , _timeLeft :: Float
     , _timeInitial :: Float
-    , _score :: Score
+    , _currentScore :: Score
     , _lifesLeft :: Int
     , _level :: Level }
 
@@ -47,7 +47,7 @@ handleGameInput (Typed c) game = if c == head (game^.selectedSnippet.snippetLeft
     then Right $ game & selectedSnippet.snippetLeft %~ tail & selectedSnippet.snippetProgress %~ (++ [c])
     else Right game
 handleGameInput Confirm game = if null (game^.selectedSnippet.snippetLeft)
-    then game & score +~ calculateScore game & setNextSnippet
+    then game & currentScore +~ calculateScore game & setNextSnippet
     else Right game
 handleGameInput _ game = Right game
 
@@ -61,12 +61,12 @@ updateGame dt game = if game^.timeLeft <= 0
 
 checkGameLost :: Game -> Either GameResult Game
 checkGameLost game = if game^.lifesLeft <= 0
-    then Left $ GameLost (game^.score)
+    then Left $ GameLost (game^.currentScore)
     else Right game
 
 setNextSnippet :: Game -> Either GameResult Game
 setNextSnippet game = case game^.remainingSnippets of
-    [] -> Left $ GameWon (game^.score)
+    [] -> Left $ GameWon (game^.currentScore)
     (x:xs) -> Right $ game 
         & remainingSnippets .~ xs 
         & selectedSnippet .~ freshSnippet x 
@@ -90,7 +90,7 @@ newGame l = Game
     , _selectedSnippet = freshSnippet firstSnippet
     , _timeLeft = time
     , _timeInitial = time
-    , _score = 0
+    , _currentScore = 0
     , _lifesLeft = l^.levelLifes
     , _level = l }
     where

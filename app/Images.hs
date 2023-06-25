@@ -13,6 +13,9 @@ data Images = Images
     , _brokenHeartImg :: Picture
     , _okImg :: Picture
     , _titleImg :: Picture
+    , _scoresImg :: Picture
+    , _nameImg :: Picture
+    , _levelImg :: Picture
     }
 
 makeLenses ''Images
@@ -25,7 +28,10 @@ loadImages = do
     bh <- fromMaybe blank <$> loadJuicyPNG "data/broken_heart.png"
     o <- fromMaybe blank <$> loadJuicyPNG "data/ok.png"
     t <- fromMaybe blank <$> loadJuicyPNG "data/title.png"
-    return Images { _monitorImg = m, _keyboardImg = k, _heartImg = h, _brokenHeartImg = bh, _okImg = o, _titleImg = t }
+    s <- fromMaybe blank <$> loadJuicyPNG "data/high_score.png"
+    n <- fromMaybe blank <$> loadJuicyPNG "data/name.png"
+    l <- fromMaybe blank <$> loadJuicyPNG "data/level.png"
+    return Images { _monitorImg = m, _keyboardImg = k, _heartImg = h, _brokenHeartImg = bh, _okImg = o, _titleImg = t, _scoresImg = s, _nameImg = n, _levelImg = l }
     where
         defaultHeart = color red $ circleSolid 40
         defaultOk = blank

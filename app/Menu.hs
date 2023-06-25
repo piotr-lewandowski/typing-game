@@ -7,7 +7,7 @@ import Input
 import Lens.Micro.TH
 import Lens.Micro
 
-data MenuAction = StartGame | HighScores | LevelSelect deriving (Show)
+data MenuAction = StartGame | HighScores | LevelSelect | NameChange deriving (Show)
 
 data MenuState = MenuState { _actions :: [MenuAction], _selectedAction :: Int } deriving (Show)
 
@@ -25,4 +25,4 @@ clampSelectedAction menu = menu & selectedAction .~ (menu^.selectedAction) `mod`
         len = length $ menu^.actions
 
 mainMenu :: MenuState
-mainMenu = MenuState [StartGame, HighScores] 0
+mainMenu = MenuState [StartGame, HighScores, LevelSelect, NameChange] 0
