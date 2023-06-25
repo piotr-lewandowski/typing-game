@@ -43,6 +43,7 @@ library
     , mtl
     , random
     , vector
+    , yampa-gloss
   default-language: Haskell2010
 
 executable typing-game-exe
@@ -52,6 +53,7 @@ executable typing-game-exe
       Config
       Game
       Graphics
+      HighScore
       Images
       Input
       Menu
@@ -73,6 +75,7 @@ executable typing-game-exe
     , random
     , typing-game
     , vector
+    , yampa-gloss
   default-language: Haskell2010
 
 test-suite typing-game-test
@@ -99,4 +102,5 @@ test-suite typing-game-test
     , random
     , typing-game
     , vector
+    , yampa-gloss
   default-language: Haskell2010

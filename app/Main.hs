@@ -8,7 +8,8 @@ import Input
 import Images
 import App
 import Lens.Micro
-import Control.Monad.State.Strict
+import FRP.Yampa
+import Graphics.Gloss.Interface.FRP.Yampa
 
 main :: IO ()
 main = do
@@ -16,14 +17,12 @@ main = do
     imgs <- loadImages
     let w = config^.width
         h = config^.height
-    play
+    playYampa
         (InWindow "Dev Sim" (w, h) (0, 0))
         white
         120
-        (initialState config imgs)
-        renderApp
-        ((execState . handleMaybeAppInput) . mapGlossEvents)
-        (execState . updateApp)
+        (arr (>>= mapGlossEvents) >>> inputSF (initialState config imgs) >>> arr renderApp)
+
 
 initialState :: Config -> Images -> App
 initialState config imgs = App {

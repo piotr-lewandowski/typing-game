@@ -11,10 +11,16 @@ packages:
       size: 273
   original:
     hackage: gloss-juicy-0.2.3
+- completed:
+    hackage: yampa-gloss-0.2.1@sha256:2b64563b4c6b24fa14c3baed339eba5ce30f69e699df34c47b69c633081ed8f5,1824
+    pantry-tree:
+      sha256: 23d8505b4cb4452f9b52b5a80cc266be2836b17053622c64c5f61a2df5821187
+      size: 345
+  original:
+    hackage: yampa-gloss-0.2.1
 snapshots:
 - completed:
     sha256: 1867d84255dff8c87373f5dd03e5a5cb1c10a99587e26c8793e750c54e83ffdc
     size: 639139
     url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/21/0.yaml
-  original:
-    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/21/0.yaml
+  original: lts-21.0

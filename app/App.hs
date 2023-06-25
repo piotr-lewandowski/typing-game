@@ -1,14 +1,15 @@
 {-# LANGUAGE TemplateHaskell #-}
+{-# LANGUAGE Arrows #-}
 module App where
 
 import Game
 import Config
 import Menu
 import Input
-import Control.Monad.State.Strict
 import Lens.Micro.TH
 import Lens.Micro
 import Images
+import FRP.Yampa
 
 data Stage = Playing Game | Menu MenuState | Lost Score | Won Score
 
@@ -16,39 +17,45 @@ data App = App
     { _currentStage :: Stage
     , _activeConfig :: Config
     , _images :: Images
-    , _activeLevel :: Level }
+    , _activeLevel :: Level
+    }
 
 makeLenses ''App
 
-type AppState = State App
-
-updateApp :: Float -> AppState ()
-updateApp dt = do
-    app <- get
+updateApp :: Float -> App -> App
+updateApp dt app =
     case app^.currentStage of
         Playing game -> case updateGame dt game of
-            Left (GameLost score) -> put $ app & currentStage .~ Lost score
-            Left (GameWon score) -> put $ app & currentStage .~ Won score
-            Right game' -> put $ app & currentStage .~ Playing game'
-        _ -> return ()
+            Left (GameLost s) -> app & currentStage .~ Lost s
+            Left (GameWon s) -> app & currentStage .~ Won s
+            Right game' -> app & currentStage .~ Playing game'
+        _ -> app
     
-handleAppInput :: InputEvents -> AppState ()
-handleAppInput (Resize (w, h)) = do
-    app <- get
-    put $ app & activeConfig.width .~ w & activeConfig.height .~ h
-handleAppInput event = do
-    app <- get
+handleAppInput :: InputEvents -> App -> App
+handleAppInput (Resize (w, h)) app = app & activeConfig.width .~ w & activeConfig.height .~ h
+handleAppInput event app =
     case app^.currentStage of
         Playing game -> case handleGameInput event game of
-            Left (GameLost score) -> put $ app & currentStage .~ Lost score
-            Left (GameWon score) -> put $ app & currentStage .~ Won score
-            Right game' -> put $ app & currentStage .~ Playing game'
+            Left (GameLost s) -> app & currentStage .~ Lost s
+            Left (GameWon s) -> app & currentStage .~ Won s
+            Right game' -> app & currentStage .~ Playing game'
         Menu menu -> case handleMenuInput event menu of
-            Left StartGame -> put $ app & currentStage .~ Playing (newGame $ app^.activeLevel)
-            Left HighScores -> put $ app & currentStage .~ Playing (newGame $ app^.activeLevel)
-            Right menu' -> put $ app & currentStage .~ Menu menu'
-        _ -> put $ app & currentStage .~ Menu mainMenu
+            Left StartGame -> app & currentStage .~ Playing (newGame $ app^.activeLevel)
+            Left HighScores -> app
+            Left LevelSelect -> app
+            Right menu' -> app & currentStage .~ Menu menu'
+        _ -> app & currentStage .~ Menu mainMenu
 
-handleMaybeAppInput :: Maybe InputEvents -> AppState ()
-handleMaybeAppInput Nothing = return ()
-handleMaybeAppInput (Just event) = handleAppInput event
+handleMaybeAppInput :: Event InputEvents -> App -> App
+handleMaybeAppInput NoEvent = id
+handleMaybeAppInput (Event e) = handleAppInput e
+
+timeDifference :: SF () Float
+timeDifference = iterFrom (\_ _ dt _ -> dt) 0 >>> arr realToFrac
+
+inputSF :: App -> SF (Event InputEvents) App
+inputSF app = loopPre app $ proc (e, app') -> do
+    app'' <- arr (uncurry handleMaybeAppInput) -< (e, app')
+    dt <- timeDifference -< ()
+    app''' <- arr (uncurry updateApp) -< (realToFrac dt, app'')
+    returnA -< (app''', app''')
