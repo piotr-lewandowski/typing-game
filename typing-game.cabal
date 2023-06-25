@@ -57,6 +57,7 @@ executable typing-game-exe
       Images
       Input
       Menu
+      NameChange
       Paths_typing_game
   hs-source-dirs:
       app

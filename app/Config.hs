@@ -31,3 +31,5 @@ readConfig = do
         Just c -> return c
         Nothing -> error "Could not parse config.json"
 
+writeConfig :: Config -> IO ()
+writeConfig config = BS.writeFile "data/config.json" $ encode config

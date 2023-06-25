@@ -11,6 +11,7 @@ import Lens.Micro
 import Images
 import FRP.Yampa
 import HighScore
+import NameChange
 import System.IO.Unsafe
 
 data Stage 
@@ -19,7 +20,7 @@ data Stage
     | Lost Score 
     | Won Score
     | ViewingScores [HighScore]
-    | ChangingName Name Name
+    | ChangingName NameChangeState
     | ChoosingLevel [Level]
 
 data App = App
@@ -53,8 +54,11 @@ handleAppInput event app =
             Left StartGame -> app & currentStage .~ Playing (newGame $ app^.activeLevel)
             Left HighScores -> app & currentStage .~ ViewingScores (app^.highScores)
             Left LevelSelect -> app & currentStage .~ ChoosingLevel (app^.activeConfig.levels)
-            Left NameChange -> app & currentStage .~ ChangingName (app^.activeConfig.name) ""
+            Left NameChange -> app & currentStage .~ ChangingName (NameChangeState (app^.activeConfig.name) "")
             Right menu' -> app & currentStage .~ Menu menu'
+        ChangingName nameChange -> case handleNameChangeInput event nameChange of
+            Left newName -> app & currentStage .~ (Menu mainMenu) & updateName newName
+            Right nameChange' -> app & currentStage .~ ChangingName nameChange'
         _ -> app & currentStage .~ Menu mainMenu
 
 handleMaybeAppInput :: Event InputEvents -> App -> App
@@ -75,3 +79,8 @@ updateScores :: Score -> App -> App
 updateScores s app = seq (unsafePerformIO $ writeHighScores newScores) (app & highScores .~ newScores)
     where
         newScores = insertScore (HighScore (app^.(activeConfig.name)) s) (app^.highScores)
+
+updateName :: Name -> App -> App
+updateName n app = seq (unsafePerformIO $ writeConfig (newApp^.activeConfig)) newApp
+    where 
+        newApp = (app & activeConfig.name .~ n)

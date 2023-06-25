@@ -8,6 +8,7 @@ import Menu
 import Lens.Micro
 import Images
 import HighScore
+import NameChange
 
 renderApp :: App -> Picture
 renderApp app = case app^.currentStage of
@@ -16,7 +17,7 @@ renderApp app = case app^.currentStage of
     Lost s -> renderLost s
     Won s -> renderWon s
     ViewingScores scores -> renderHighScores config scores (app^.images.scoresImg)
-    ChangingName old new -> renderNameChange config old new (app^.images.nameImg)
+    ChangingName names -> renderNameChange config names (app^.images.nameImg)
     ChoosingLevel levels -> renderLevelSelect config levels (app^.images.levelImg)
     where
         config = app^.activeConfig
@@ -128,8 +129,8 @@ renderHighScores config scores title = pictures $ placedTitle : zipWith renderHs
         renderHs :: Int -> HighScore -> Picture
         renderHs i (HighScore name s) = translate (50 - fromIntegral (config^.width) / 2) (100 + fromIntegral (-i) * 50) $ scale 0.2 0.2 $ text $ name ++ " " ++ show s
 
-renderNameChange :: Config -> Name -> Name -> Picture -> Picture
-renderNameChange config old new title = pictures $ [placedTitle, renderOld, renderNew]
+renderNameChange :: Config -> NameChangeState -> Picture -> Picture
+renderNameChange config (NameChangeState old new) title = pictures $ [placedTitle, renderOld, renderNew]
     where
         placedTitle = translate 0 (fromIntegral (config^.height)/2 - 100) title
         renderOld = translate (-200) (-100) $ scale 0.2 0.2 $ text $ "Current name: " ++ old

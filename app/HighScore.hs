@@ -5,7 +5,7 @@ module HighScore where
 import Lens.Micro.TH
 import GHC.Generics
 import Data.Aeson
-import qualified Data.ByteString as BS
+import qualified Data.ByteString.Lazy as BS
 
 data HighScore = HighScore { _playerName :: String, _score :: Int } deriving (Show, Eq, Generic)
 
@@ -27,10 +27,10 @@ insertInSortedList x (y:ys) = if x > y then x : y : ys else y : insertInSortedLi
 readHighScores :: IO [HighScore]
 readHighScores = do
     file <- BS.readFile "data/scores.json"
-    let scores = decode (BS.fromStrict file) :: Maybe [HighScore]
+    let scores = decode file :: Maybe [HighScore]
     case scores of
         Just s -> return s
         Nothing -> error "Could not parse scores.json"
 
 writeHighScores :: [HighScore] -> IO ()
-writeHighScores scores = BS.writeFile "data/scores.json" $ BS.toStrict (encode scores)
+writeHighScores scores = BS.writeFile "data/scores.json" (encode scores)
