@@ -28,6 +28,7 @@ library
       Game
       HighScore
       InputEvents
+      LevelSelect
       Menu
       NameChange
   other-modules:

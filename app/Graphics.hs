@@ -9,6 +9,7 @@ import Lens.Micro
 import Images
 import HighScore
 import NameChange
+import LevelSelect
 
 renderApp :: App -> Picture
 renderApp app = case app^.currentStage of
@@ -136,9 +137,13 @@ renderNameChange config (NameChangeState old new) title = pictures $ [placedTitl
         renderOld = translate (-200) (-100) $ scale 0.2 0.2 $ text $ "Current name: " ++ old
         renderNew = translate (-200) (-200) $ scale 0.2 0.2 $ text $ "New name: " ++ new
 
-renderLevelSelect :: Config -> [Level] -> Picture -> Picture
-renderLevelSelect config lvls title = pictures $ placedTitle : zipWith renderLevel [0..] lvls
+renderLevelSelect :: Config -> LevelSelectState -> Picture -> Picture
+renderLevelSelect config (LevelSelectState lvls ind) title = pictures $ placedTitle : zipWith renderLevel [0..] lvls
     where
         placedTitle = translate 0 (fromIntegral (config^.height)/2 - 100) title
         renderLevel :: Int -> Level -> Picture
-        renderLevel i (Level num _ _) = translate 0 (100 + fromIntegral (-i) * 50) $ scale 0.2 0.2 $ text $ show num
+        renderLevel i (Level num _ _) = translate (50 - fromIntegral (config^.width) / 2) (100 + fromIntegral (-i) * 50) 
+            $ color (if i == ind then red else black)
+            $ scale 0.2 0.2 
+            $ text 
+            $ "Level " ++ show num

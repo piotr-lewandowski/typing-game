@@ -13,6 +13,7 @@ import FRP.Yampa
 import HighScore
 import NameChange
 import System.IO.Unsafe
+import LevelSelect
 
 data Stage 
     = Playing Game 
@@ -21,7 +22,7 @@ data Stage
     | Won Score
     | ViewingScores [HighScore]
     | ChangingName NameChangeState
-    | ChoosingLevel [Level]
+    | ChoosingLevel LevelSelectState
 
 data App = App
     { _currentStage :: Stage
@@ -53,12 +54,15 @@ handleAppInput ev ap =
         Menu menu -> case handleMenuInput ev menu of
             Left StartGame -> ap & currentStage .~ Playing (newGame $ ap^.activeLevel)
             Left HighScores -> ap & currentStage .~ ViewingScores (ap^.highScores)
-            Left LevelSelect -> ap & currentStage .~ ChoosingLevel (ap^.activeConfig.levels)
+            Left LevelSelect -> ap & currentStage .~ ChoosingLevel (LevelSelectState (ap^.activeConfig.levels) 0)
             Left NameChange -> ap & currentStage .~ ChangingName (NameChangeState (ap^.activeConfig.name) "")
             Right menu' -> ap & currentStage .~ Menu menu'
         ChangingName nameChange -> case handleNameChangeInput ev nameChange of
             Left new -> ap & currentStage .~ (Menu mainMenu) & updateName new
             Right newState -> ap & currentStage .~ ChangingName newState
+        ChoosingLevel levelSelect -> case handleLevelSelectInput ev levelSelect of
+            Left newLevel -> ap & currentStage .~ Playing (newGame newLevel) & activeLevel .~ newLevel
+            Right newState -> ap & currentStage .~ ChoosingLevel newState
         _ -> ap & currentStage .~ Menu mainMenu
 
 handleMaybeAppInput :: Event InputEvents -> App -> App
