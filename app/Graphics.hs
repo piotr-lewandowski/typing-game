@@ -1,4 +1,4 @@
-module Graphics where
+module Graphics(renderApp) where
 
 import Graphics.Gloss
 import Game
@@ -18,7 +18,7 @@ renderApp app = case app^.currentStage of
     Won s -> renderWon s
     ViewingScores scores -> renderHighScores config scores (app^.images.scoresImg)
     ChangingName names -> renderNameChange config names (app^.images.nameImg)
-    ChoosingLevel levels -> renderLevelSelect config levels (app^.images.levelImg)
+    ChoosingLevel lvls -> renderLevelSelect config lvls (app^.images.levelImg)
     where
         config = app^.activeConfig
 
@@ -35,14 +35,14 @@ renderDesk config keyb = pictures
         h = 0.2 * fromIntegral (config^.height)
         movY = fromIntegral (config^.height) / 2
 
-renderMonitor :: Config -> Picture -> Picture
-renderMonitor config monit = translate 0 (-10) $ scale 0.8 0.8 monit
+renderMonitor :: Picture -> Picture
+renderMonitor monit = translate 0 (-10) $ scale 0.8 0.8 monit
 
-renderSnippet :: Config -> SnippetInProgress -> Picture -> Picture
-renderSnippet config (SnippetInProgress typ left progress) ok = pictures
+renderSnippet :: SnippetInProgress -> Picture -> Picture
+renderSnippet (SnippetInProgress typ left progress) ok = pictures
     [ translate (-260) 0 $ color c (scale 0.2 0.2 $ text progress)
     , if null left then done else todo
-    , renderSnippetType config typ
+    , renderSnippetType typ
     ]
     where
         todo = translate (-200) 100 $ scale 0.2 0.2 $ text $ "TODO: " ++ left
@@ -52,8 +52,8 @@ renderSnippet config (SnippetInProgress typ left progress) ok = pictures
             Task -> blue
             Story -> green
 
-renderSnippetType:: Config -> SnippetType -> Picture
-renderSnippetType config typ = pictures
+renderSnippetType:: SnippetType -> Picture
+renderSnippetType typ = pictures
     [ translate (-220) 175 $ color col $ rectangleSolid 100 50
     , translate (-260) 165 $ color white (scale 0.2 0.2 $ text txt)
     ]
@@ -67,8 +67,8 @@ renderSnippetType config typ = pictures
 renderGame :: Config -> Images -> Game -> Picture
 renderGame config imgs game = pictures
     [ renderDesk config (imgs^.keyboardImg)
-    , renderMonitor config (imgs^.monitorImg)
-    , renderSnippet config (game^.selectedSnippet) (imgs^.okImg)
+    , renderMonitor (imgs^.monitorImg)
+    , renderSnippet (game^.selectedSnippet) (imgs^.okImg)
     , renderScore config game
     , renderLifes config game imgs
     , renderTimeLeft config game
@@ -127,7 +127,7 @@ renderHighScores config scores title = pictures $ placedTitle : zipWith renderHs
     where
         placedTitle = translate 0 (fromIntegral (config^.height)/2 - 100) title
         renderHs :: Int -> HighScore -> Picture
-        renderHs i (HighScore name s) = translate (50 - fromIntegral (config^.width) / 2) (100 + fromIntegral (-i) * 50) $ scale 0.2 0.2 $ text $ name ++ " " ++ show s
+        renderHs i (HighScore n s) = translate (50 - fromIntegral (config^.width) / 2) (100 + fromIntegral (-i) * 50) $ scale 0.2 0.2 $ text $ n ++ " " ++ show s
 
 renderNameChange :: Config -> NameChangeState -> Picture -> Picture
 renderNameChange config (NameChangeState old new) title = pictures $ [placedTitle, renderOld, renderNew]
@@ -137,8 +137,8 @@ renderNameChange config (NameChangeState old new) title = pictures $ [placedTitl
         renderNew = translate (-200) (-200) $ scale 0.2 0.2 $ text $ "New name: " ++ new
 
 renderLevelSelect :: Config -> [Level] -> Picture -> Picture
-renderLevelSelect config levels title = pictures $ placedTitle : zipWith renderLevel [0..] levels
+renderLevelSelect config lvls title = pictures $ placedTitle : zipWith renderLevel [0..] lvls
     where
         placedTitle = translate 0 (fromIntegral (config^.height)/2 - 100) title
         renderLevel :: Int -> Level -> Picture
-        renderLevel i (Level name _ _) = translate 0 (100 + fromIntegral (-i) * 50) $ scale 0.2 0.2 $ text $ show name
+        renderLevel i (Level num _ _) = translate 0 (100 + fromIntegral (-i) * 50) $ scale 0.2 0.2 $ text $ show num

@@ -24,40 +24,33 @@ source-repository head
 
 library
   exposed-modules:
-      Lib
+      Config
+      Game
+      HighScore
+      InputEvents
+      Menu
+      NameChange
   other-modules:
       Paths_typing_game
   hs-source-dirs:
       src
   ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints
   build-depends:
-      JuicyPixels
-    , Yampa
+      Yampa
     , aeson
     , base >=4.7 && <5
     , bytestring
-    , gloss
-    , gloss-juicy
     , microlens
     , microlens-th
-    , mtl
-    , random
-    , vector
-    , yampa-gloss
   default-language: Haskell2010
 
 executable typing-game-exe
   main-is: Main.hs
   other-modules:
       App
-      Config
-      Game
       Graphics
-      HighScore
       Images
       Input
-      Menu
-      NameChange
       Paths_typing_game
   hs-source-dirs:
       app
@@ -72,10 +65,7 @@ executable typing-game-exe
     , gloss-juicy
     , microlens
     , microlens-th
-    , mtl
-    , random
     , typing-game
-    , vector
     , yampa-gloss
   default-language: Haskell2010
 
@@ -83,25 +73,19 @@ test-suite typing-game-test
   type: exitcode-stdio-1.0
   main-is: Spec.hs
   other-modules:
+      Gen
       Paths_typing_game
   hs-source-dirs:
       test
   ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N
   build-depends:
-      JuicyPixels
-    , QuickCheck
+      QuickCheck
     , Yampa
     , aeson
     , base >=4.7 && <5
     , bytestring
-    , gloss
-    , gloss-juicy
     , hspec
     , microlens
     , microlens-th
-    , mtl
-    , random
     , typing-game
-    , vector
-    , yampa-gloss
   default-language: Haskell2010

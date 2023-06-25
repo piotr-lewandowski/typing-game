@@ -1,9 +1,8 @@
-module Input where
+module Input(InputEvents(..), mapGlossEvents) where
 
 import Graphics.Gloss.Interface.IO.Game
 import qualified FRP.Yampa as Y
-
-data InputEvents = GoUp | GoDown | Confirm | Typed Char | Resize (Int, Int) | Backspace | Exit deriving (Show)
+import InputEvents
 
 mapGlossEvents :: Event -> Y.Event InputEvents
 mapGlossEvents (EventResize (w, h)) = Y.Event $ Resize (w, h)

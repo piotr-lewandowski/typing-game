@@ -13,21 +13,11 @@ description: Simple typing game written in Haskell
 
 dependencies:
 - base >= 4.7 && < 5
-- mtl
 - microlens
 - microlens-th
-- random
-- gloss
 - Yampa
-- microlens
-- microlens-th
-- random
-- JuicyPixels
-- gloss-juicy
 - aeson
 - bytestring
-- vector
-- yampa-gloss
 
 ghc-options:
 - -Wall
@@ -53,6 +43,10 @@ executables:
     - -with-rtsopts=-N
     dependencies:
     - typing-game
+    - yampa-gloss
+    - gloss
+    - JuicyPixels
+    - gloss-juicy
 
 tests:
   typing-game-test:

@@ -2,7 +2,7 @@
 {-# LANGUAGE TemplateHaskell #-}
 module Game where
 
-import Input
+import InputEvents
 import Lens.Micro.TH
 import Lens.Micro
 import GHC.Generics (Generic)

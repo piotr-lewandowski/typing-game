@@ -3,7 +3,7 @@ module NameChange where
 
 import Lens.Micro.TH
 import Lens.Micro
-import Input
+import InputEvents
 import Config (Name)
 
 data NameChangeState = NameChangeState { _currentName :: Name, _newName :: Name } deriving (Show)

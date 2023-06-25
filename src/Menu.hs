@@ -3,7 +3,7 @@ module Menu where
 
 import Config
 import Game
-import Input
+import InputEvents
 import Lens.Micro.TH
 import Lens.Micro
 
