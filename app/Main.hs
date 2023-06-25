@@ -11,7 +11,7 @@ import Lens.Micro
 import FRP.Yampa
 import Graphics.Gloss.Interface.FRP.Yampa
 import HighScore
-import Data.IORef
+import Menu
 
 main :: IO ()
 main = do
@@ -21,7 +21,7 @@ main = do
     let w = config^.width
         h = config^.height
         initialState = App {
-            _currentStage = Playing (newGame (head $ config^.levels)),
+            _currentStage = Menu mainMenu,
             _activeConfig = config,
             _images = imgs,
             _activeLevel = head $ config^.levels,

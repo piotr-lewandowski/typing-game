@@ -18,7 +18,7 @@ data Stage
     | Menu MenuState 
     | Lost Score 
     | Won Score
-    | ViewingScores HighScoreList
+    | ViewingScores [HighScore]
     | ChangingName Name
     | ChoosingLevel [Level]
 
@@ -27,7 +27,7 @@ data App = App
     , _activeConfig :: Config
     , _images :: Images
     , _activeLevel :: Level
-    , _highScores :: HighScoreList
+    , _highScores :: [HighScore]
     }
 
 makeLenses ''App
@@ -46,7 +46,7 @@ handleAppInput (Resize (w, h)) app = app & activeConfig.width .~ w & activeConfi
 handleAppInput event app =
     case app^.currentStage of
         Playing game -> case handleGameInput event game of
-            Left (GameLost s) -> app & currentStage .~ Lost s & updateScores s
+            Left (GameLost s) -> app & currentStage .~ Lost s
             Left (GameWon s) -> app & currentStage .~ Won s & updateScores s
             Right game' -> app & currentStage .~ Playing game'
         Menu menu -> case handleMenuInput event menu of

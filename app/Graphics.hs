@@ -37,28 +37,37 @@ renderDesk config keyb = pictures
 renderMonitor :: Config -> Picture -> Picture
 renderMonitor config monit = translate 0 (-10) $ scale 0.8 0.8 monit
 
-renderSnippet :: Config -> SnippetInProgress -> Picture
-renderSnippet config (SnippetInProgress typ left progress) = pictures
-    [ color c (scale 0.2 0.2 $ text progress)
-    , translate (fromIntegral (length progress) * 12.0) 0 $ scale 0.2 0.2 (text left)
+renderSnippet :: Config -> SnippetInProgress -> Picture -> Picture
+renderSnippet config (SnippetInProgress typ left progress) ok = pictures
+    [ translate (-260) 0 $ color c (scale 0.2 0.2 $ text progress)
+    , if null left then done else todo
+    , renderSnippetType config typ
     ]
     where
+        todo = translate (-200) 100 $ scale 0.2 0.2 $ text $ "TODO: " ++ left
+        done = translate 200 0 $ scale 0.2 0.2 ok
         c = case typ of
             Bug -> red
             Task -> blue
             Story -> green
 
-renderSnippetBackground :: Config -> Picture
-renderSnippetBackground config = color white $ rectangleSolid w h
+renderSnippetType:: Config -> SnippetType -> Picture
+renderSnippetType config typ = pictures
+    [ translate (-220) 175 $ color col $ rectangleSolid 100 50
+    , translate (-260) 165 $ color white (scale 0.2 0.2 $ text txt)
+    ]
     where
-        w = 0.7 * fromIntegral (config^.width)
-        h = 0.4 * fromIntegral (config^.height)
+        col = case typ of
+            Bug -> red
+            Task -> blue
+            Story -> green
+        txt = show typ
 
 renderGame :: Config -> Images -> Game -> Picture
 renderGame config imgs game = pictures
     [ renderDesk config (imgs^.keyboardImg)
     , renderMonitor config (imgs^.monitorImg)
-    , renderSnippet config (game^.selectedSnippet)
+    , renderSnippet config (game^.selectedSnippet) (imgs^.okImg)
     , renderScore config game
     , renderLifes config game imgs
     , renderTimeLeft config game
@@ -111,8 +120,8 @@ renderTimeLeft config game = translate (fromIntegral (config^.width) / 2 - 15) 0
         timeLeftRatio = left / initial
         timeLeftHeight = h * timeLeftRatio
 
-renderHighScores :: Config -> HighScoreList -> Picture -> Picture
-renderHighScores config (HighScoreList scores) title = pictures $ placedTitle : zipWith renderHs [0..] scores
+renderHighScores :: Config -> [HighScore] -> Picture -> Picture
+renderHighScores config scores title = pictures $ placedTitle : zipWith renderHs [0..] scores
     where
         placedTitle = translate 0 (fromIntegral (config^.height)/2 - 100) title
         renderHs :: Int -> HighScore -> Picture
