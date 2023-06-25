@@ -74,9 +74,9 @@ renderScore config game = translate (- fromIntegral (config^.width) / 2) (fromIn
 renderMenu :: Config -> MenuState -> Picture -> Picture
 renderMenu config menu title = pictures $ placedTitle : zipWith renderMenuItem [0..] (menu^.actions)
     where
-        placedTitle = translate 0 (fromIntegral (config^.height)/2 - 200) title
+        placedTitle = translate 0 (fromIntegral (config^.height)/2 - 100) title
         renderMenuItem :: Int -> MenuAction -> Picture
-        renderMenuItem i action = translate 0 (fromIntegral (-i) * 100) $ color (chooseColor i) $ scale 0.2 0.2 $ text $ show action
+        renderMenuItem i action = translate ( (50 - fromIntegral (config^.width) / 2)) (100 + fromIntegral (-i) * 100) $ color (chooseColor i) $ scale 0.2 0.2 $ text $ show action
         chooseColor :: Int -> Color
         chooseColor i = if i == menu^.selectedAction then red else black
 
@@ -114,19 +114,19 @@ renderTimeLeft config game = translate (fromIntegral (config^.width) / 2 - 15) 0
 renderHighScores :: Config -> HighScoreList -> Picture -> Picture
 renderHighScores config (HighScoreList scores) title = pictures $ placedTitle : zipWith renderHs [0..] scores
     where
-        placedTitle = translate 0 (fromIntegral (config^.height)/2 - 200) title
+        placedTitle = translate 0 (fromIntegral (config^.height)/2 - 100) title
         renderHs :: Int -> HighScore -> Picture
         renderHs i (HighScore name s) = translate 0 (fromIntegral (-i) * 100) $ scale 0.2 0.2 $ text $ name ++ " " ++ show s
 
 renderNameChange :: Config -> String -> Picture -> Picture
 renderNameChange config name title = pictures $ placedTitle : [renderName]
     where
-        placedTitle = translate 0 (fromIntegral (config^.height)/2 - 200) title
+        placedTitle = translate 0 (fromIntegral (config^.height)/2 - 100) title
         renderName = translate 0 (fromIntegral (-1) * 100) $ scale 0.2 0.2 $ text $ name
 
 renderLevelSelect :: Config -> [Level] -> Picture -> Picture
 renderLevelSelect config levels title = pictures $ placedTitle : zipWith renderLevel [0..] levels
     where
-        placedTitle = translate 0 (fromIntegral (config^.height)/2 - 200) title
+        placedTitle = translate 0 (fromIntegral (config^.height)/2 - 100) title
         renderLevel :: Int -> Level -> Picture
         renderLevel i (Level name _ _) = translate 0 (fromIntegral (-i) * 100) $ scale 0.2 0.2 $ text $ show name
