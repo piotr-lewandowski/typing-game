@@ -1,2 +1,13 @@
+
+import Test.Hspec
+import Test.QuickCheck
+import Lens.Micro
+
+import Gen
+
+import GameSpec
+
 main :: IO ()
-main = putStrLn "Test suite not yet implemented"
+main = do
+    gameTests
+    

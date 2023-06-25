@@ -10,11 +10,13 @@ import Data.Aeson (ToJSON, FromJSON)
 
 type Score = Int
 
-data SnippetType = Bug | Task | Story deriving (Generic, Show)
+data SnippetType = Bug | Task | Story deriving (Generic, Eq, Show)
 
-data Snippet = Snippet { _snippetType :: SnippetType, _snippetContent :: String } deriving (Generic, Show)
+data Snippet = Snippet { _snippetType :: SnippetType, _snippetContent :: String } deriving (Generic, Eq, Show)
 
-data SnippetInProgress = SnippetInProgress { _snippetInProgressType :: SnippetType, _snippetLeft :: String, _snippetProgress :: String }
+data SnippetInProgress = SnippetInProgress { _snippetInProgressType :: SnippetType, _snippetLeft :: String, _snippetProgress :: String } deriving (Eq, Show)
+
+data GameResult = GameWon Score | GameLost Score deriving (Eq, Show)
 
 data Game = Game
     { _remainingSnippets :: [Snippet]
@@ -23,12 +25,12 @@ data Game = Game
     , _timeInitial :: Float
     , _currentScore :: Score
     , _lifesLeft :: Int
-    , _level :: Level }
+    , _level :: Level } deriving (Eq, Show)
 
 data Level = Level
     { _levelNum :: Int
     , _levelLifes :: Int
-    , _levelSnippets :: [Snippet] } deriving (Generic, Show)
+    , _levelSnippets :: [Snippet] } deriving (Generic, Eq, Show)
 
 makeLenses ''Game
 makeLenses ''Level
@@ -52,7 +54,14 @@ handleGameInput Confirm game = if null (game^.selectedSnippet.snippetLeft)
 handleGameInput _ game = Right game
 
 calculateScore :: Game -> Score
-calculateScore game = length (game^.selectedSnippet.snippetProgress) * ceiling (game^.timeLeft)
+calculateScore game = typeBaseScore (game^.selectedSnippet.snippetInProgressType) 
+    + length (game^.selectedSnippet.snippetProgress) 
+    + ceiling ((game^.timeInitial) - (game^.timeLeft))
+
+typeBaseScore :: SnippetType -> Score
+typeBaseScore Bug = 1
+typeBaseScore Task = 5
+typeBaseScore Story = 10
 
 updateGame :: Float -> Game -> Either GameResult Game
 updateGame dt game = if game^.timeLeft <= 0
@@ -75,8 +84,6 @@ setNextSnippet game = case game^.remainingSnippets of
 
 freshSnippet :: Snippet -> SnippetInProgress
 freshSnippet (Snippet t c) = SnippetInProgress t c ""
-
-data GameResult = GameWon Score | GameLost Score
 
 calculateSnippetTime :: Snippet -> Float
 calculateSnippetTime (Snippet t c) = fromIntegral (length c) / 10 + case t of
