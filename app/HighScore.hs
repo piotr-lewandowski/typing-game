@@ -18,7 +18,7 @@ instance FromJSON HighScore
 instance ToJSON HighScore
 
 insertScore :: HighScore -> [HighScore] -> [HighScore]
-insertScore score scores = take 10 $ insertInSortedList score scores
+insertScore score scores = take 8 $ insertInSortedList score scores
 
 insertInSortedList :: Ord a => a -> [a] -> [a]
 insertInSortedList x [] = [x]

@@ -19,7 +19,7 @@ data Stage
     | Lost Score 
     | Won Score
     | ViewingScores [HighScore]
-    | ChangingName Name
+    | ChangingName Name Name
     | ChoosingLevel [Level]
 
 data App = App
@@ -53,7 +53,7 @@ handleAppInput event app =
             Left StartGame -> app & currentStage .~ Playing (newGame $ app^.activeLevel)
             Left HighScores -> app & currentStage .~ ViewingScores (app^.highScores)
             Left LevelSelect -> app & currentStage .~ ChoosingLevel (app^.activeConfig.levels)
-            Left NameChange -> app & currentStage .~ ChangingName (app^.activeConfig.name)
+            Left NameChange -> app & currentStage .~ ChangingName (app^.activeConfig.name) ""
             Right menu' -> app & currentStage .~ Menu menu'
         _ -> app & currentStage .~ Menu mainMenu
 
