@@ -1,1 +1,34 @@
-[{"_playerName":"Zubu","_score":39},{"_playerName":"Remik","_score":24},{"_playerName":"Remik","_score":18},{"_playerName":"Remik","_score":12},{"_playerName":"Remik","_score":12},{"_playerName":"Remik","_score":12},{"_playerName":"Remik","_score":6},{"_playerName":"Remik","_score":6}]
+[
+    {
+        "_playerName": "Piotr",
+        "_score": 41
+    },
+    {
+        "_playerName": "Piotrek",
+        "_score": 39
+    },
+    {
+        "_playerName": "Ptr",
+        "_score": 38
+    },
+    {
+        "_playerName": "Pieter",
+        "_score": 24
+    },
+    {
+        "_playerName": "Piotruś",
+        "_score": 18
+    },
+    {
+        "_playerName": "Pietrek",
+        "_score": 12
+    },
+    {
+        "_playerName": "Peter",
+        "_score": 12
+    },
+    {
+        "_playerName": "Pedro",
+        "_score": 12
+    }
+]
