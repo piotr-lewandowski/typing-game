@@ -28,7 +28,7 @@ main = do
                 , _highScores = scores
                 }
     playYampa
-        (InWindow "Dev Sim" (w, h) (0, 0))
+        (InWindow "Dev Sim" (w, h) (200, 200))
         white
         120
         (arr (>>= mapGlossEvents) >>> appSF initialState >>> arr renderApp)
