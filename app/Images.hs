@@ -44,8 +44,3 @@ loadImages = do
             , _nameImg = n
             , _levelImg = l
             }
-  where
-    defaultHeart = color red $ circleSolid 40
-    defaultOk = blank
-    defaultMonitor = color black $ rectangleSolid 100 100
-    defaultKeyboard = color black $ rectangleSolid 100 100
