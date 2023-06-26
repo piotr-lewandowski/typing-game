@@ -136,11 +136,13 @@ renderWon :: Score -> Picture
 renderWon s = color green $ translate (-100) 0 $ scale 0.4 0.4 $ text $ "You won with score " ++ show s
 
 renderHighScores :: Config -> [HighScore] -> Picture -> Picture
-renderHighScores config scores title = pictures $ placedTitle : zipWith renderHs [0 ..] scores
+renderHighScores config scores title = pictures $ placedTitle : zipWith renderHs [0 ..] scores ++ zipWith renderName [0 ..] scores
   where
     placedTitle = translate 0 (fromIntegral (config ^. height) / 2 - 100) title
+    renderName :: Int -> HighScore -> Picture
+    renderName i (HighScore n _) = translate (50 - fromIntegral (config ^. width) / 2) (100 + fromIntegral (-i) * 50) $ scale 0.2 0.2 $ text n
     renderHs :: Int -> HighScore -> Picture
-    renderHs i (HighScore n s) = translate (50 - fromIntegral (config ^. width) / 2) (100 + fromIntegral (-i) * 50) $ scale 0.2 0.2 $ text $ n ++ " " ++ show s
+    renderHs i (HighScore _ s) = translate (250 - fromIntegral (config ^. width) / 2) (100 + fromIntegral (-i) * 50) $ scale 0.2 0.2 $ text $ show s
 
 renderNameChange :: Config -> NameChangeState -> Picture -> Picture
 renderNameChange config (NameChangeState old new) title = pictures $ [placedTitle, renderOld, renderNew]
