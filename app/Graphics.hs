@@ -129,10 +129,11 @@ renderMenu config menu title = pictures $ placedTitle : zipWith renderMenuItem [
     chooseColor i = if i == menu ^. selectedAction then red else black
 
 renderLost :: Score -> Picture
-renderLost s = color red $ scale 0.2 0.2 $ text $ "You lost with score " ++ show s
+renderLost s =
+    color red $ translate (-100) 0 $ scale 0.4 0.4 $ text "You lost"
 
 renderWon :: Score -> Picture
-renderWon s = color green $ scale 0.2 0.2 $ text $ "You won with score " ++ show s
+renderWon s = color green $ translate (-100) 0 $ scale 0.4 0.4 $ text $ "You won with score " ++ show s
 
 renderHighScores :: Config -> [HighScore] -> Picture -> Picture
 renderHighScores config scores title = pictures $ placedTitle : zipWith renderHs [0 ..] scores

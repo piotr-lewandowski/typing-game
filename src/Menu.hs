@@ -20,8 +20,14 @@ handleMenuInput _ menu = Right menu
 
 clampSelectedAction :: MenuState -> MenuState
 clampSelectedAction menu = menu & selectedAction .~ (menu ^. selectedAction) `mod` len
-  where
-    len = length $ menu ^. actions
+ where
+  len = length $ menu ^. actions
 
 mainMenu :: MenuState
 mainMenu = MenuState [StartGame, HighScores, LevelSelect, NameChange] 0
+
+menuActionText :: MenuAction -> String
+menuActionText StartGame = "Start Game"
+menuActionText HighScores = "High Scores"
+menuActionText LevelSelect = "Level Select"
+menuActionText NameChange = "Change Name"
