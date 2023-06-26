@@ -35,6 +35,16 @@ data App = App
 
 makeLenses ''App
 
+appSF :: App -> SF (Event InputEvents) App
+appSF initialApp = loopPre initialApp $ proc (input, previousApp) -> do
+    appAfterInput <- arr (uncurry handleEventAppInput) -< (input, previousApp)
+    dt <- timeDifference -< ()
+    updatingApp <- arr (uncurry updateApp) -< (dt, appAfterInput)
+    returnA -< (updatingApp, updatingApp)
+
+timeDifference :: SF () Float
+timeDifference = iterFrom (\_ _ dt _ -> dt) 0 >>> arr realToFrac
+
 updateApp :: Float -> App -> App
 updateApp dt ap =
     case ap ^. currentStage of
@@ -47,38 +57,28 @@ updateApp dt ap =
 handleAppInput :: InputEvents -> App -> App
 handleAppInput (Resize newSize) ap = updateSize newSize ap
 handleAppInput ev ap =
-    case ap ^. currentStage of
+    ap & case ap ^. currentStage of
         Playing game -> case handleGameInput ev game of
-            Left (GameLost s) -> ap & currentStage .~ Lost s
-            Left (GameWon s) -> ap & currentStage .~ Won s & updateScores s
-            Right game' -> ap & currentStage .~ Playing game'
+            Left (GameLost s) -> currentStage .~ Lost s
+            Left (GameWon s) -> (currentStage .~ Won s) . updateScores s
+            Right game' -> currentStage .~ Playing game'
         Menu menu -> case handleMenuInput ev menu of
-            Left StartGame -> ap & currentStage .~ Playing (newGame $ ap ^. activeLevel)
-            Left HighScores -> ap & currentStage .~ ViewingScores (ap ^. highScores)
-            Left LevelSelect -> ap & currentStage .~ ChoosingLevel (LevelSelectState (ap ^. activeConfig . levels) 0)
-            Left NameChange -> ap & currentStage .~ ChangingName (NameChangeState (ap ^. activeConfig . name) "")
-            Right menu' -> ap & currentStage .~ Menu menu'
+            Left StartGame -> currentStage .~ Playing (newGame $ ap ^. activeLevel)
+            Left HighScores -> currentStage .~ ViewingScores (ap ^. highScores)
+            Left LevelSelect -> currentStage .~ ChoosingLevel (LevelSelectState (ap ^. activeConfig . levels) 0)
+            Left NameChange -> currentStage .~ ChangingName (NameChangeState (ap ^. activeConfig . name) "")
+            Right menu' -> currentStage .~ Menu menu'
         ChangingName nameChange -> case handleNameChangeInput ev nameChange of
-            Left new -> ap & currentStage .~ (Menu mainMenu) & updateName new
-            Right newState -> ap & currentStage .~ ChangingName newState
+            Left new -> (currentStage .~ (Menu mainMenu)) . updateName new
+            Right newState -> currentStage .~ ChangingName newState
         ChoosingLevel levelSelect -> case handleLevelSelectInput ev levelSelect of
-            Left newLevel -> ap & currentStage .~ Playing (newGame newLevel) & activeLevel .~ newLevel
-            Right newState -> ap & currentStage .~ ChoosingLevel newState
-        _ -> ap & currentStage .~ Menu mainMenu
+            Left newLevel -> (currentStage .~ Playing (newGame newLevel)) . (activeLevel .~ newLevel)
+            Right newState -> currentStage .~ ChoosingLevel newState
+        _ -> currentStage .~ Menu mainMenu
 
-handleMaybeAppInput :: Event InputEvents -> App -> App
-handleMaybeAppInput NoEvent = id
-handleMaybeAppInput (Event e) = handleAppInput e
-
-timeDifference :: SF () Float
-timeDifference = iterFrom (\_ _ dt _ -> dt) 0 >>> arr realToFrac
-
-appSF :: App -> SF (Event InputEvents) App
-appSF initialApp = loopPre initialApp $ proc (e, app') -> do
-    app'' <- arr (uncurry handleMaybeAppInput) -< (e, app')
-    dt <- timeDifference -< ()
-    app''' <- arr (uncurry updateApp) -< (dt, app'')
-    returnA -< (app''', app''')
+handleEventAppInput :: Event InputEvents -> App -> App
+handleEventAppInput NoEvent = id
+handleEventAppInput (Event e) = handleAppInput e
 
 updateScores :: Score -> App -> App
 updateScores s a = seq (unsafePerformIO $ writeHighScores newScores) (a & highScores .~ newScores)
