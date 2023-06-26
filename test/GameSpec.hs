@@ -22,6 +22,8 @@ gameTests = do
             property invalidInput
         it "Time updates should reduce the timer" $
             property updating
+        it "Typing a letter instead of enter should not change the game" $
+            property typingLetter
 
 loosing :: Game -> Bool
 loosing game = checkGameLost (game & lifesLeft .~ 0) == Left (GameLost (game ^. currentScore))
@@ -55,3 +57,9 @@ updating game dt = case res of
     Right resultGame -> resultGame ^. timeLeft < game ^. timeLeft
   where
     res = updateGame 1 game
+
+typingLetter :: Game -> Char -> Bool
+typingLetter game c = res == Right finishedSnippetGame
+  where
+    res = handleGameInput (Typed c) finishedSnippetGame
+    finishedSnippetGame = game & selectedSnippet . snippetLeft .~ ""

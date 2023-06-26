@@ -48,7 +48,11 @@ renderSnippet (SnippetInProgress typ left progress) ok =
         , renderSnippetType typ
         ]
   where
-    todo = translate (-200) 100 $ scale 0.2 0.2 $ text $ "TODO: " ++ left
+    todo =
+        pictures
+            [ translate (-260) 100 $ scale 0.2 0.2 $ text "TODO: "
+            , translate (-260) 50 $ scale 0.2 0.2 $ text left
+            ]
     done = translate 200 0 $ scale 0.2 0.2 ok
     c = case typ of
         Bug -> red

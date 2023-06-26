@@ -50,10 +50,12 @@ instance FromJSON Snippet
 instance FromJSON Level
 
 handleGameInput :: InputEvents -> Game -> Either GameResult Game
-handleGameInput (Typed c) game =
-    if c == head (game ^. selectedSnippet . snippetLeft)
-        then Right $ game & selectedSnippet . snippetLeft %~ tail & selectedSnippet . snippetProgress %~ (++ [c])
-        else Right game
+handleGameInput (Typed c) game = case game ^. selectedSnippet . snippetLeft of
+    (x : _) ->
+        if c == x
+            then Right $ game & selectedSnippet . snippetLeft %~ tail & selectedSnippet . snippetProgress %~ (++ [c])
+            else Right game
+    _ -> Right game
 handleGameInput Confirm game =
     if null (game ^. selectedSnippet . snippetLeft)
         then game & currentScore +~ calculateScore game & setNextSnippet
@@ -99,7 +101,7 @@ freshSnippet (Snippet t c) = SnippetInProgress t c ""
 
 calculateSnippetTime :: Snippet -> Float
 calculateSnippetTime (Snippet t c) =
-    fromIntegral (length c) / 10 + case t of
+    fromIntegral (length c) / 5 + case t of
         Bug -> 3
         Task -> 6
         Story -> 9
