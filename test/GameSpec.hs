@@ -1,11 +1,11 @@
 module GameSpec where
 
+import Control.Monad (foldM)
+import Gen
+import InputEvents
+import Lens.Micro
 import Test.Hspec
 import Test.QuickCheck
-import Lens.Micro
-import InputEvents
-import Gen
-import Control.Monad (foldM)
 
 import Game
 
@@ -24,35 +24,34 @@ gameTests = do
             property updating
 
 loosing :: Game -> Bool
-loosing game = checkGameLost (game & lifesLeft .~ 0) == Left (GameLost (game^.currentScore))
+loosing game = checkGameLost (game & lifesLeft .~ 0) == Left (GameLost (game ^. currentScore))
 
 winning :: Game -> Bool
-winning game = setNextSnippet (game & remainingSnippets .~ []) == Left (GameWon (game^.currentScore))
+winning game = setNextSnippet (game & remainingSnippets .~ []) == Left (GameWon (game ^. currentScore))
 
 scoring :: Game -> Bool
 scoring game = case res of
     Left _ -> False
-    Right resultGame -> resultGame^.currentScore > game^.currentScore
-    where
-        inputs = makeCompletingInputs game
-        res = applyInputs inputs game
+    Right resultGame -> resultGame ^. currentScore > game ^. currentScore
+  where
+    inputs = makeCompletingInputs game
+    res = applyInputs inputs game
 
-        applyInputs :: [InputEvents] -> Game -> Either GameResult Game
-        applyInputs inputs game = foldM (flip handleGameInput) game inputs
+    applyInputs :: [InputEvents] -> Game -> Either GameResult Game
+    applyInputs inputs game = foldM (flip handleGameInput) game inputs
 
-        makeCompletingInputs :: Game -> [InputEvents]
-        makeCompletingInputs game = map Typed (game^.selectedSnippet.snippetLeft) ++ [Confirm]
+    makeCompletingInputs :: Game -> [InputEvents]
+    makeCompletingInputs game = map Typed (game ^. selectedSnippet . snippetLeft) ++ [Confirm]
 
 invalidInput :: Game -> Bool
 invalidInput game = res == Right gameExpectingB
-    where
-        res = handleGameInput (Typed 'a') gameExpectingB
-        gameExpectingB = game & selectedSnippet.snippetLeft .~ "b" & selectedSnippet.snippetProgress .~ ""
+  where
+    res = handleGameInput (Typed 'a') gameExpectingB
+    gameExpectingB = game & selectedSnippet . snippetLeft .~ "b" & selectedSnippet . snippetProgress .~ ""
 
 updating :: Game -> Float -> Bool
 updating game dt = case res of
-    Left _ -> game^.timeLeft - dt <= 0
-    Right resultGame -> resultGame^.timeLeft < game^.timeLeft
-    where
-        res = updateGame 1 game
-
+    Left _ -> game ^. timeLeft - dt <= 0
+    Right resultGame -> resultGame ^. timeLeft < game ^. timeLeft
+  where
+    res = updateGame 1 game

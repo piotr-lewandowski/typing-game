@@ -9,13 +9,13 @@ nonNegativeInt :: Gen Int
 nonNegativeInt = abs <$> (arbitrary :: Gen Int)
 
 positiveInt :: Gen Int
-positiveInt = (+1) . abs <$> (arbitrary :: Gen Int)
+positiveInt = (+ 1) . abs <$> (arbitrary :: Gen Int)
 
 nonNegativeFloat :: Gen Float
 nonNegativeFloat = abs <$> (arbitrary :: Gen Float)
 
 positiveFloat :: Gen Float
-positiveFloat = (+1) . abs <$> (arbitrary :: Gen Float)
+positiveFloat = (+ 1) . abs <$> (arbitrary :: Gen Float)
 
 instance Arbitrary SnippetInProgress where
     arbitrary = do

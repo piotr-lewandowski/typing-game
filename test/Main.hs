@@ -1,4 +1,4 @@
-module Main(main) where
+module Main (main) where
 
 import Test.Hspec
 
@@ -9,4 +9,3 @@ main :: IO ()
 main = hspec $ do
     gameTests
     highScoreTests
-    

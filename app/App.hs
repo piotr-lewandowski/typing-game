@@ -1,24 +1,25 @@
-{-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE Arrows #-}
-module App where
+{-# LANGUAGE TemplateHaskell #-}
 
-import Game
+module App (Stage (..), App (..), currentStage, activeConfig, images, activeLevel, highScores, appSF) where
+
 import Config
-import Menu
-import Input
-import Lens.Micro.TH
-import Lens.Micro
-import Images
 import FRP.Yampa
+import Game
 import HighScore
+import Images
+import Input
+import Lens.Micro
+import Lens.Micro.TH
+import LevelSelect
+import Menu
 import NameChange
 import System.IO.Unsafe
-import LevelSelect
 
-data Stage 
-    = Playing Game 
-    | Menu MenuState 
-    | Lost Score 
+data Stage
+    = Playing Game
+    | Menu MenuState
+    | Lost Score
     | Won Score
     | ViewingScores [HighScore]
     | ChangingName NameChangeState
@@ -36,26 +37,26 @@ makeLenses ''App
 
 updateApp :: Float -> App -> App
 updateApp dt ap =
-    case ap^.currentStage of
+    case ap ^. currentStage of
         Playing game -> case updateGame dt game of
             Left (GameLost s) -> ap & currentStage .~ Lost s
             Left (GameWon s) -> ap & currentStage .~ Won s
             Right game' -> ap & currentStage .~ Playing game'
         _ -> ap
-    
+
 handleAppInput :: InputEvents -> App -> App
-handleAppInput (Resize (w, h)) ap = ap & activeConfig.width .~ w & activeConfig.height .~ h
+handleAppInput (Resize newSize) ap = updateSize newSize ap
 handleAppInput ev ap =
-    case ap^.currentStage of
+    case ap ^. currentStage of
         Playing game -> case handleGameInput ev game of
             Left (GameLost s) -> ap & currentStage .~ Lost s
             Left (GameWon s) -> ap & currentStage .~ Won s & updateScores s
             Right game' -> ap & currentStage .~ Playing game'
         Menu menu -> case handleMenuInput ev menu of
-            Left StartGame -> ap & currentStage .~ Playing (newGame $ ap^.activeLevel)
-            Left HighScores -> ap & currentStage .~ ViewingScores (ap^.highScores)
-            Left LevelSelect -> ap & currentStage .~ ChoosingLevel (LevelSelectState (ap^.activeConfig.levels) 0)
-            Left NameChange -> ap & currentStage .~ ChangingName (NameChangeState (ap^.activeConfig.name) "")
+            Left StartGame -> ap & currentStage .~ Playing (newGame $ ap ^. activeLevel)
+            Left HighScores -> ap & currentStage .~ ViewingScores (ap ^. highScores)
+            Left LevelSelect -> ap & currentStage .~ ChoosingLevel (LevelSelectState (ap ^. activeConfig . levels) 0)
+            Left NameChange -> ap & currentStage .~ ChangingName (NameChangeState (ap ^. activeConfig . name) "")
             Right menu' -> ap & currentStage .~ Menu menu'
         ChangingName nameChange -> case handleNameChangeInput ev nameChange of
             Left new -> ap & currentStage .~ (Menu mainMenu) & updateName new
@@ -72,8 +73,8 @@ handleMaybeAppInput (Event e) = handleAppInput e
 timeDifference :: SF () Float
 timeDifference = iterFrom (\_ _ dt _ -> dt) 0 >>> arr realToFrac
 
-inputSF :: App -> SF (Event InputEvents) App
-inputSF initialApp = loopPre initialApp $ proc (e, app') -> do
+appSF :: App -> SF (Event InputEvents) App
+appSF initialApp = loopPre initialApp $ proc (e, app') -> do
     app'' <- arr (uncurry handleMaybeAppInput) -< (e, app')
     dt <- timeDifference -< ()
     app''' <- arr (uncurry updateApp) -< (dt, app'')
@@ -81,10 +82,15 @@ inputSF initialApp = loopPre initialApp $ proc (e, app') -> do
 
 updateScores :: Score -> App -> App
 updateScores s a = seq (unsafePerformIO $ writeHighScores newScores) (a & highScores .~ newScores)
-    where
-        newScores = insertScore (a^.highScores) (HighScore (a^.(activeConfig.name)) s)
+  where
+    newScores = insertScore (a ^. highScores) (HighScore (a ^. (activeConfig . name)) s)
 
 updateName :: Name -> App -> App
-updateName n a = seq (unsafePerformIO $ writeConfig (newApp^.activeConfig)) newApp
-    where 
-        newApp = (a & activeConfig.name .~ n)
+updateName n a = seq (unsafePerformIO $ writeConfig (newApp ^. activeConfig)) newApp
+  where
+    newApp = (a & activeConfig . name .~ n)
+
+updateSize :: (Int, Int) -> App -> App
+updateSize (w, h) a = seq (unsafePerformIO $ writeConfig (newApp ^. activeConfig)) newApp
+  where
+    newApp = (a & activeConfig . width .~ w & activeConfig . height .~ h)

@@ -1,4 +1,5 @@
 {-# LANGUAGE TemplateHaskell #-}
+
 module Images where
 
 import Data.Maybe
@@ -6,7 +7,7 @@ import Graphics.Gloss
 import Graphics.Gloss.Juicy
 import Lens.Micro.TH
 
-data Images = Images 
+data Images = Images
     { _monitorImg :: Picture
     , _keyboardImg :: Picture
     , _heartImg :: Picture
@@ -31,9 +32,20 @@ loadImages = do
     s <- fromMaybe blank <$> loadJuicyPNG "data/high_score.png"
     n <- fromMaybe blank <$> loadJuicyPNG "data/name.png"
     l <- fromMaybe blank <$> loadJuicyPNG "data/level.png"
-    return Images { _monitorImg = m, _keyboardImg = k, _heartImg = h, _brokenHeartImg = bh, _okImg = o, _titleImg = t, _scoresImg = s, _nameImg = n, _levelImg = l }
-    where
-        defaultHeart = color red $ circleSolid 40
-        defaultOk = blank
-        defaultMonitor = color black $ rectangleSolid 100 100
-        defaultKeyboard = color black $ rectangleSolid 100 100
+    return
+        Images
+            { _monitorImg = m
+            , _keyboardImg = k
+            , _heartImg = h
+            , _brokenHeartImg = bh
+            , _okImg = o
+            , _titleImg = t
+            , _scoresImg = s
+            , _nameImg = n
+            , _levelImg = l
+            }
+  where
+    defaultHeart = color red $ circleSolid 40
+    defaultOk = blank
+    defaultMonitor = color black $ rectangleSolid 100 100
+    defaultKeyboard = color black $ rectangleSolid 100 100

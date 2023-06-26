@@ -1,13 +1,14 @@
 {-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE TemplateHaskell #-}
+
 module HighScore where
 
-import Lens.Micro.TH
-import GHC.Generics
 import Data.Aeson
 import qualified Data.ByteString.Lazy as BS
+import GHC.Generics
+import Lens.Micro.TH
 
-data HighScore = HighScore { _playerName :: String, _score :: Int } deriving (Show, Eq, Generic)
+data HighScore = HighScore {_playerName :: String, _score :: Int} deriving (Show, Eq, Generic)
 
 makeLenses ''HighScore
 
@@ -20,9 +21,9 @@ instance ToJSON HighScore
 insertScore :: [HighScore] -> HighScore -> [HighScore]
 insertScore scs sc = take 8 $ insertInSortedList sc scs
 
-insertInSortedList :: Ord a => a -> [a] -> [a]
+insertInSortedList :: (Ord a) => a -> [a] -> [a]
 insertInSortedList x [] = [x]
-insertInSortedList x (y:ys) = if x > y then x : y : ys else y : insertInSortedList x ys
+insertInSortedList x (y : ys) = if x > y then x : y : ys else y : insertInSortedList x ys
 
 readHighScores :: IO [HighScore]
 readHighScores = do

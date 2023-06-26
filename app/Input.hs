@@ -1,7 +1,7 @@
-module Input(InputEvents(..), mapGlossEvents) where
+module Input (InputEvents (..), mapGlossEvents) where
 
-import Graphics.Gloss.Interface.IO.Game
 import qualified FRP.Yampa as Y
+import Graphics.Gloss.Interface.IO.Game
 import InputEvents
 
 mapGlossEvents :: Event -> Y.Event InputEvents

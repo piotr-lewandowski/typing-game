@@ -1,12 +1,13 @@
 {-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE TemplateHaskell #-}
+
 module Config where
 
-import Game
 import Data.Aeson
 import qualified Data.ByteString.Lazy as BS
 import GHC.Generics
+import Game
 import Lens.Micro.TH
 
 type Name = String
@@ -16,7 +17,8 @@ data Config = Config
     , _width :: Int
     , _height :: Int
     , _name :: Name
-    } deriving (Show, Generic)
+    }
+    deriving (Show, Generic)
 
 makeLenses ''Config
 

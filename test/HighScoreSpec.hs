@@ -1,9 +1,9 @@
 module HighScoreSpec where
 
+import HighScore
+import Lens.Micro
 import Test.Hspec
 import Test.QuickCheck
-import Lens.Micro
-import HighScore
 
 instance Arbitrary HighScore where
     arbitrary = do
@@ -12,7 +12,7 @@ instance Arbitrary HighScore where
         return $ HighScore name score
 
 highScoreTests :: Spec
-highScoreTests = 
+highScoreTests =
     describe "High scores" $ do
         it "Lists should have at most 8 elements" $
             property lengthPreservation
@@ -22,7 +22,7 @@ highScoreTests =
 isSorted :: [HighScore] -> Bool
 isSorted [] = True
 isSorted [x] = True
-isSorted (x:y:xs) = x^.score >= y^.score && isSorted (y:xs)
+isSorted (x : y : xs) = x ^. score >= y ^. score && isSorted (y : xs)
 
 sorting :: [HighScore] -> Bool
 sorting scores = isSorted $ foldl insertScore [] scores
